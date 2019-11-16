@@ -32,3 +32,30 @@ function extract_all_emails($string){
     $result = ( isset($matches[0]) && array_filter($matches[0]) ) ? $matches[0] : '';
     return $result;
 }
+
+/* 
+This function can only be used on custom fields (e.g. ACF plugin)
+Usage: 
+$text = get_field('myfieldname');
+$content = email_obfuscator($text);
+*/
+
+function email_obfuscator($string) {
+    $output = '';
+    if($string) {
+        $emails_matched = ($string) ? extract_all_emails($string) : '';
+        if($emails_matched) {
+            foreach($emails_matched as $em) {
+                $encrypted = antispambot($em,1);
+                $replace = 'mailto:'.$em;
+                $new_mailto = 'mailto:'.$encrypted;
+                $string = str_replace($replace, $new_mailto, $string);
+                $rep2 = $em.'';
+                $new2 = antispambot($em).'';
+                $string = str_replace($rep2, $new2, $string);
+            }
+        }
+        $output = apply_filters('the_content',$string);
+    }
+    return $output;
+}

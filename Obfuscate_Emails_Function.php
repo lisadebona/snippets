@@ -59,3 +59,4 @@ function email_obfuscator($string) {
     }
     return $output;
 }
+
